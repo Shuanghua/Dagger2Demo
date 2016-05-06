@@ -9,6 +9,7 @@ import com.shuanghua.dagger2demo.interfaces.AppComponent;
 import butterknife.ButterKnife;
 
 public abstract class BaseActivity extends AppCompatActivity {
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

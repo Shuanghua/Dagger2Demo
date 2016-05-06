@@ -1,11 +1,14 @@
 package com.shuanghua.dagger2demo.module;
 
 import android.app.Application;
+
 import com.shuanghua.dagger2demo.R;
-import com.shuanghua.dagger2demo.interfaces.GitHubApiService;
+import com.shuanghua.dagger2demo.interfaces.ApiService;
 import com.squareup.okhttp.OkHttpClient;
 
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
@@ -18,7 +21,7 @@ import retrofit.RxJavaCallAdapterFactory;
  * Created by ShuangHua on 2016/5/4.
  */
 @Module
-public class GitHubApiModule {
+public class ApiModule {
 
     @Provides
     public OkHttpClient provideOkHttpClient() {
@@ -28,19 +31,25 @@ public class GitHubApiModule {
         return okHttpClient;
     }
 
+    @Named("GitHub")
     @Provides
-    public Retrofit provideRetrofit(Application application, OkHttpClient okHttpClient) {
-        Retrofit retrofit = new Retrofit.Builder()
+    protected ApiService provideGitHubService(Application application, OkHttpClient okHttpClient) {
+        return new Retrofit.Builder()
                 .baseUrl(application.getString(R.string.api_github))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(okHttpClient)
-                .build();
-        return retrofit;
+                .build().create(ApiService.class);
     }
 
+    @Named("MeiZi")
     @Provides
-    protected GitHubApiService provideGitHubService(Retrofit retrofit) {
-        return retrofit.create(GitHubApiService.class);
+    protected ApiService provideMeiZiService(Application application, OkHttpClient okHttpClient) {
+        return new Retrofit.Builder()
+                .baseUrl(application.getString(R.string.api_meizi))
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(okHttpClient)
+                .build().create(ApiService.class);
     }
 }

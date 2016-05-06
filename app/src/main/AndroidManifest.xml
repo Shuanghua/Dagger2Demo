@@ -3,6 +3,7 @@
     package="com.shuanghua.dagger2demo">
 
     <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".app.AppApplication"
         android:allowBackup="true"
@@ -17,6 +18,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activity.MeiZiActivity" />
+        <activity android:name=".activity.ShowImageActivity" android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"/>
     </application>
 
 </manifest>

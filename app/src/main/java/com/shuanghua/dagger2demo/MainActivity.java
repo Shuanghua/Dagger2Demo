@@ -1,5 +1,6 @@
 package com.shuanghua.dagger2demo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,17 +9,18 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.shuanghua.dagger2demo.activity.BaseActivity;
+import com.shuanghua.dagger2demo.activity.MeiZiActivity;
 import com.shuanghua.dagger2demo.adapter.RepoAdapter;
 import com.shuanghua.dagger2demo.bean.Repo;
+import com.shuanghua.dagger2demo.interfaces.ApiService;
 import com.shuanghua.dagger2demo.interfaces.AppComponent;
-import com.shuanghua.dagger2demo.interfaces.GitHubApiService;
 
 import java.util.ArrayList;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import butterknife.InjectView;
-import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -30,8 +32,9 @@ public class MainActivity extends BaseActivity {
     @InjectView(R.id.pbLoading)
     ProgressBar mProgressBar;
 
+    @Named("GitHub")
     @Inject
-    GitHubApiService githubApiService;
+    ApiService githubApiService;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,26 +54,24 @@ public class MainActivity extends BaseActivity {
 
     private void loadData(final RepoAdapter adapter) {
         showLoading(true);
-        githubApiService.getRepoData("Shuanghua")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<ArrayList<Repo>>() {
-                    @Override
-                    public void onCompleted() {
+        if (null != githubApiService) {
+            githubApiService.getRepoData("Shuanghua")
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new MyObserver<ArrayList<Repo>>() {
 
-                    }
+                        @Override
+                        public void onError(Throwable e) {
+                            showLoading(false);
+                        }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        showLoading(false);
-                    }
-
-                    @Override
-                    public void onNext(ArrayList<Repo> repos) {
-                        showLoading(false);
-                        adapter.setRepos(repos);
-                    }
-                });
+                        @Override
+                        public void onNext(ArrayList<Repo> repos) {
+                            showLoading(false);
+                            adapter.setRepos(repos);
+                        }
+                    });
+        }
     }
 
     public void showLoading(boolean loading) {
@@ -85,5 +86,9 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void setupActivityComponent(AppComponent appComponent) {
         appComponent.inject(this);
+    }
+
+    public void seeMeiZi(View view) {
+        startActivity(new Intent(MainActivity.this, MeiZiActivity.class));
     }
 }
